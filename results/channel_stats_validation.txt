@@ -11,7 +11,7 @@ characteristics (Group):
   path_loss (Dataset): shape=(15, 1, 4), dtype=float32
 metrics (Group):
   capacity (Dataset): shape=(15, 3360), dtype=float32
-  sinr (Dataset): shape=(15, 15, 1, 4), dtype=float32
+  sinr (Dataset): shape=(15, 1, 4), dtype=float32
 mimo_info (Group):
   num_rx_ant (Dataset): shape=(), dtype=int32
   num_tx_ant (Dataset): shape=(), dtype=int32
@@ -21,14 +21,14 @@ Channel Statistics Summary:
 ==================================================
 
 Channel Magnitude:
-  Mean: 3.8710
-  Std:  2.0947
-  Range: [0.0420, 16.8982]
+  Mean: 3.8627
+  Std:  2.0906
+  Range: [0.0170, 16.0883]
 
 Channel Phase:
-  Mean: -0.0154
-  Std:  1.8172
-  Range: [-3.1414, 3.1416]
+  Mean: -0.0054
+  Std:  1.8071
+  Range: [-3.1416, 3.1416]
 
 SNR:
   Mean: 19.3226
@@ -36,12 +36,12 @@ SNR:
   Range: [10.6732, 27.4489]
 
 Capacity:
-  Mean: 45.5453
-  Std:  6.9587
-  Range: [24.2300, 65.9457]
+  Mean: 45.4779
+  Std:  6.9560
+  Range: [23.9386, 64.1912]
 
 Condition Numbers:
-  Mean: 10.7033
-  Std:  12.8541
-  Range: [2.0730, 249.4361]
-  Geometric Mean: 8.1906
+  Mean: 11.1807
+  Std:  18.4859
+  Range: [1.9466, 702.2050]
+  Geometric Mean: 8.2908

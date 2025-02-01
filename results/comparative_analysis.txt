@@ -5,17 +5,17 @@ Comparative Analysis Summary
 CHANNEL_MAGNITUDE Statistics:
 ------------------------------
 train:
-  Mean: 3.9736
-  Std:  2.1694
-  Range: [0.0066, 19.3130]
+  Mean: 3.9730
+  Std:  2.1751
+  Range: [0.0114, 18.7890]
 validation:
-  Mean: 3.8710
-  Std:  2.0947
-  Range: [0.0420, 16.8982]
+  Mean: 3.8627
+  Std:  2.0906
+  Range: [0.0170, 16.0883]
 test:
-  Mean: 3.8622
-  Std:  2.0928
-  Range: [0.0075, 16.2919]
+  Mean: 3.8577
+  Std:  2.0916
+  Range: [0.0325, 16.9923]
 
 SNR Statistics:
 ------------------------------
@@ -35,26 +35,26 @@ test:
 CAPACITY Statistics:
 ------------------------------
 train:
-  Mean: 47.6481
-  Std:  7.9122
-  Range: [23.1077, 67.5740]
+  Mean: 47.7063
+  Std:  7.9375
+  Range: [22.6509, 67.7988]
 validation:
-  Mean: 45.5453
-  Std:  6.9587
-  Range: [24.2300, 65.9457]
+  Mean: 45.4779
+  Std:  6.9560
+  Range: [23.9386, 64.1912]
 test:
-  Mean: 45.5178
-  Std:  6.9652
-  Range: [24.5154, 63.6713]
+  Mean: 45.5562
+  Std:  6.9665
+  Range: [24.3340, 64.9754]
 
 Cross-Split Correlations (using sampled data):
 ------------------------------
-train-validation channel_magnitude: 0.2095
+train-validation channel_magnitude: 0.0298
 train-validation snr: -0.0763
-train-validation capacity: 0.1417
-train-test channel_magnitude: 0.1031
+train-validation capacity: 0.0780
+train-test channel_magnitude: 0.4714
 train-test snr: -0.0763
-train-test capacity: 0.0234
-validation-test channel_magnitude: -0.0772
+train-test capacity: 0.1031
+validation-test channel_magnitude: 0.1911
 validation-test snr: -0.2509
-validation-test capacity: 0.0521
+validation-test capacity: -0.0072

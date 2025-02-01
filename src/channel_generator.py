@@ -181,23 +181,18 @@ def compute_performance_metrics(h, snr_db):
         signal_power = tf.reduce_mean(tf.abs(h)**2, axis=[-1, -2])  # Average over last two dims
         print("signal_power shape:", signal_power.shape)
         
-        # Compute noise power
-        noise_power = tf.pow(10.0, -snr_db/10.0)
+        # Compute noise power (shape: [batch_size, 1])
+        noise_power = tf.pow(10.0, -snr_db/10.0)  # Already has shape [batch_size, 1]
         
-        # Add dimensions to match signal_power shape for broadcasting
-        noise_power = tf.expand_dims(noise_power, axis=-1)  # For num_rx dimension
-        noise_power = tf.expand_dims(noise_power, axis=-1)  # For num_rx_ant dimension
+        # Reshape noise_power for broadcasting with signal_power
+        noise_power = tf.expand_dims(noise_power, axis=-1)  # Shape becomes [batch_size, 1, 1]
         
-        # Based on the shapes printed in the error message:
-        # h shape: (32, 1, 4, 14, 64)
-        # signal_power shape: (32, 1, 4)
-        # We need noise_power shape to be (32, 1, 1) for proper broadcasting
         print("noise_power shape:", noise_power.shape)
         
         # Compute SINR
         metrics["sinr"] = signal_power / noise_power
 
-    return metrics  # Make sure to return the metrics dictionary
+        return metrics  # Make sure to return the metrics dictionary
 
 
 # Modify your generate_dataset function
