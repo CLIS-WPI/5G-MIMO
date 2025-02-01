@@ -1,0 +1,49 @@
+
+Dataset Structure:
+beamforming (Group):
+  condition_number (Dataset): shape=(7168, 4), dtype=complex64
+  optimal_weights (Dataset): shape=(7168, 4), dtype=complex64
+  singular_values (Dataset): shape=(7168, 4, 4), dtype=complex64
+channel (Dataset): shape=(32, 1, 4, 14, 64), dtype=complex64
+characteristics (Group):
+  condition_number (Dataset): shape=(7168,), dtype=float32
+  delay_spread (Dataset): shape=(32, 1, 4, 14), dtype=float32
+  path_loss (Dataset): shape=(32, 1, 4), dtype=float32
+metrics (Group):
+  capacity (Dataset): shape=(32, 7168), dtype=float32
+  sinr (Dataset): shape=(32, 32, 1, 4), dtype=float32
+mimo_info (Group):
+  num_rx_ant (Dataset): shape=(), dtype=int32
+  num_tx_ant (Dataset): shape=(), dtype=int32
+snr (Dataset): shape=(32, 1), dtype=float32
+Warning: Skipping capacity data with unexpected shape (6, 1344)
+Warning: Skipping sinr data with unexpected shape (6, 6, 1, 4)
+
+Channel Statistics Summary:
+==================================================
+
+Channel Magnitude:
+  Mean: 3.9736
+  Std:  2.1694
+  Range: [0.0066, 19.3130]
+
+Channel Phase:
+  Mean: 0.0039
+  Std:  1.8142
+  Range: [-3.1416, 3.1416]
+
+SNR:
+  Mean: 20.5187
+  Std:  5.4779
+  Range: [10.1893, 28.9706]
+
+Capacity:
+  Mean: 47.6481
+  Std:  7.9122
+  Range: [23.1077, 67.5740]
+
+Condition Numbers:
+  Mean: 11.0060
+  Std:  16.8992
+  Range: [1.5663, 1128.9341]
+  Geometric Mean: 8.2575

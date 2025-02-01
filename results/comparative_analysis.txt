@@ -1,0 +1,60 @@
+Comparative Analysis Summary
+==================================================
+
+
+CHANNEL_MAGNITUDE Statistics:
+------------------------------
+train:
+  Mean: 3.9736
+  Std:  2.1694
+  Range: [0.0066, 19.3130]
+validation:
+  Mean: 3.8710
+  Std:  2.0947
+  Range: [0.0420, 16.8982]
+test:
+  Mean: 3.8622
+  Std:  2.0928
+  Range: [0.0075, 16.2919]
+
+SNR Statistics:
+------------------------------
+train:
+  Mean: 20.5187
+  Std:  5.4779
+  Range: [10.1893, 28.9706]
+validation:
+  Mean: 19.3226
+  Std:  4.7987
+  Range: [10.6732, 27.4489]
+test:
+  Mean: 19.3226
+  Std:  4.7987
+  Range: [10.6732, 27.4489]
+
+CAPACITY Statistics:
+------------------------------
+train:
+  Mean: 47.6481
+  Std:  7.9122
+  Range: [23.1077, 67.5740]
+validation:
+  Mean: 45.5453
+  Std:  6.9587
+  Range: [24.2300, 65.9457]
+test:
+  Mean: 45.5178
+  Std:  6.9652
+  Range: [24.5154, 63.6713]
+
+Cross-Split Correlations (using sampled data):
+------------------------------
+train-validation channel_magnitude: 0.2095
+train-validation snr: -0.0763
+train-validation capacity: 0.1417
+train-test channel_magnitude: 0.1031
+train-test snr: -0.0763
+train-test capacity: 0.0234
+validation-test channel_magnitude: -0.0772
+validation-test snr: -0.2509
+validation-test capacity: 0.0521

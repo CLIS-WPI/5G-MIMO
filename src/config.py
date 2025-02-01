@@ -4,7 +4,7 @@ import tensorflow as tf
 # General Configuration
 # config.py
 CONFIG = {
-    "num_samples": 50000,         # Increased total samples
+    "num_samples": 100,         # Increased total samples
     "batch_size": 32,           
     "random_seed": 42,            
     "splits": {
@@ -21,34 +21,40 @@ CONFIG = {
 
 # MIMO and Antenna Configuration
 ANTENNA_CONFIG = {
-    "num_rows": 4,                    # Number of rows of elements
-    "num_cols": 4,                    # Number of columns of elements
-    "polarization": "dual",           # Must be either "single" or "dual"
-    "polarization_type": "VH",        # For dual polarization, must be "VH" or "cross"
+    "num_rows": 2,                    # Number of rows of elements
+    "num_cols": 2,                    # Number of columns of elements
+    "polarization": "single",           # Must be either "single" or "dual"
+    "polarization_type": "V",        # For dual polarization, must be "VH" or "cross"
     "pattern": "38.901",             # Element radiation pattern, either "omni" or "38.901"
     "carrier_frequency": 3.5e9,      # Carrier frequency in Hz
-    "spacing": 0.5,                  # Element spacing in multiples of wavelength
+    "spacing": 0.5,                  # Element spacing in multiples of wavelength????????
     "vertical_spacing": 0.5,         # Optional: Element vertical spacing (defaults to 0.5 if not specified)
     "horizontal_spacing": 0.5        # Optional: Element horizontal spacing (defaults to 0.5 if not specified)
+}
+
+MIMO_CONFIG = {
+    "num_tx": 4,                  # Number of transmitters
+    "num_rx": 4,                  # Number of receivers
+    "num_streams_per_tx": 1       # Streams per transmitter (for spatial multiplexing)
 }
 
 # OFDM Configuration
 OFDM_CONFIG = {
     "num_subcarriers": 64,       
-    "subcarrier_spacing": 30e3,  
+    "subcarrier_spacing": 30e3,  #30 kHz subcarrier spacing
     "num_ofdm_symbols": 14,      
-    "cyclic_prefix_length": 6    
+    "cyclic_prefix_length": 9  # CP length in samples for 30 kHz spacing
 }
 
 # Channel Configuration
 CHANNEL_CONFIG = {
-    "model": "A",  # Change from "A" to "TDL-A",# - TDL models: "A", "B", "C", "D", "E", "A30", "B100", "C300"  ||TDL-A channel model which is suitable for static urban environments           
-    "delay_spread": 300e-9,     
+    "model": "A",  #"TDL-A",# - TDL models: "A", "B", "C", "D", "E", "A30", "B100", "C300"  ||TDL-A channel model which is suitable for static urban environments           
+    "delay_spread": 30e-9,   # Reduced to 30ns for TDL-A  
     "min_speed": 0.0, # Set to 0.0 for no mobility         
     "max_speed": 0.0, # Set to 0.0 for no mobility  
     "num_ant": 4,  # Changed to 4 for 4x4 MIMO            
     "snr_range": (10, 30),
-    "los_probability": 1.0,  # Line of sight probability
+    "los_probability": 0.5,     # Changed to 0.5 for realistic urban scenario
     "bandwidth": 100e6  # 100 MHz bandwidth      
 }
 
@@ -65,23 +71,6 @@ DEBUG_CONFIG = {
     "print_channel_stats": True,  # Print channel statistics
     "save_intermediate": False,   # Save intermediate results
     "log_level": "INFO"          # Logging level
-}
-
-# Channel Characteristics Configuration
-CHANNEL_CHARACTERISTICS_CONFIG = {
-    "compute_condition_number": True,
-    "compute_path_loss": True,
-    "compute_delay_spread": True,
-    "compute_doppler": False, #set to False since there's no mobility
-    "compute_angular_spread": True
-}
-
-# Beamforming Configuration
-BEAMFORMING_CONFIG = {
-    "compute_optimal_weights": True,
-    "compute_beam_patterns": False,
-    "store_beam_directions": True,
-    "num_beams": 4
 }
 
 # Performance Metrics Configuration
@@ -110,10 +99,3 @@ BEAMFORMING_CONFIG = {
     "num_beams": 4                    # Number of beams (matching num_streams)
 }
 
-# Performance Metrics Configuration
-METRICS_CONFIG = {
-    "compute_capacity": True,         # Compute channel capacity
-    "compute_sinr": True,            # Compute SINR
-    "compute_ber": False,            # Compute Bit Error Rate (if applicable)
-    "compute_ser": False             # Compute Symbol Error Rate (if applicable)
-}

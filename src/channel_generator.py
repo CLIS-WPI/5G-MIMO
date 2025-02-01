@@ -7,7 +7,7 @@ from sionna.channel.tr38901 import TDL
 from sionna.ofdm import ResourceGrid
 from sionna.channel import OFDMChannel
 import h5py
-from config import CONFIG, ANTENNA_CONFIG, OFDM_CONFIG, CHANNEL_CONFIG
+from config import CONFIG, ANTENNA_CONFIG, OFDM_CONFIG, CHANNEL_CONFIG, MIMO_CONFIG
 from sionna.nr import PUSCHConfig, PUSCHDMRSConfig
 import numpy as np
 from config import (
@@ -35,13 +35,13 @@ def setup_arrays():
     return AntennaArray(**array_params), AntennaArray(**array_params)
 
 def setup_resource_grid():
-    """Create OFDM resource grid"""
+    """Create OFDM resource grid using config values"""
     return ResourceGrid(
         num_ofdm_symbols=OFDM_CONFIG["num_ofdm_symbols"],
         fft_size=OFDM_CONFIG["num_subcarriers"],
         subcarrier_spacing=OFDM_CONFIG["subcarrier_spacing"],
-        num_tx=1,
-        num_streams_per_tx=CHANNEL_CONFIG["num_ant"],
+        num_tx=MIMO_CONFIG["num_tx"],                   # From config
+        num_streams_per_tx=MIMO_CONFIG["num_streams_per_tx"],  # From config
         cyclic_prefix_length=OFDM_CONFIG["cyclic_prefix_length"]
     )
 
@@ -53,8 +53,8 @@ def setup_channel_model(rg, bs_array, ue_array):
         carrier_frequency=ANTENNA_CONFIG["carrier_frequency"],
         min_speed=CHANNEL_CONFIG["min_speed"],
         max_speed=CHANNEL_CONFIG["max_speed"],
-        num_rx_ant=4,  # Set to 4 for 4x4 MIMO
-        num_tx_ant=4,  # Set to 4 for 4x4 MIMO
+        num_rx_ant=MIMO_CONFIG["num_rx"],  # From config
+        num_tx_ant=MIMO_CONFIG["num_tx"],  # From config
         # Optional parameters for spatial correlation
         spatial_corr_mat=None,  # Add if you want to model spatial correlation
         rx_corr_mat=None,       # Add if you want to model RX correlation
@@ -69,16 +69,6 @@ def setup_channel_model(rg, bs_array, ue_array):
         add_awgn=True
     )
 
-def setup_resource_grid():
-    """Create OFDM resource grid"""
-    return ResourceGrid(
-        num_ofdm_symbols=OFDM_CONFIG["num_ofdm_symbols"],
-        fft_size=OFDM_CONFIG["num_subcarriers"],
-        subcarrier_spacing=OFDM_CONFIG["subcarrier_spacing"],
-        num_tx=4,  # Changed from 1 to 4 for 4x4 MIMO
-        num_streams_per_tx=1,  # Changed to 1 since we have 4 transmitters
-        cyclic_prefix_length=OFDM_CONFIG["cyclic_prefix_length"]
-    )
 
 # Add these new functions
 def compute_channel_characteristics(h, snr_db):
@@ -87,8 +77,8 @@ def compute_channel_characteristics(h, snr_db):
     
     if CHANNEL_CHARACTERISTICS_CONFIG["compute_condition_number"]:
         # Compute condition number for each subcarrier using SVD
-        h_matrix = tf.reshape(h, [-1, CHANNEL_CONFIG["num_ant"], CHANNEL_CONFIG["num_ant"]])
-        # Compute SVD
+        h_matrix = tf.reshape(h, [-1, MIMO_CONFIG["num_rx"], MIMO_CONFIG["num_tx"]])
+        # Compute SVD (fixed indentation and separated from previous line)
         s = tf.linalg.svd(h_matrix, compute_uv=False)
         # Condition number is ratio of largest to smallest singular value
         characteristics["condition_number"] = tf.math.divide_no_nan(
@@ -115,9 +105,25 @@ def compute_beamforming_data(h):
     beamforming_data = {}
     
     if BEAMFORMING_CONFIG["compute_optimal_weights"]:
-        # Compute optimal beamforming weights using SVD
-        _, _, v = tf.linalg.svd(h)
+        # Reshape h to include tx dimensions that are missing
+        h_shape = tf.shape(h)
+        
+        # Add missing tx dimensions
+        h_reshaped = tf.expand_dims(tf.expand_dims(h, axis=3), axis=4)
+        
+        # Now reshape for SVD computation
+        h_matrix = tf.reshape(h_reshaped, [-1, MIMO_CONFIG["num_rx"], MIMO_CONFIG["num_tx"]])
+        
+        # Compute SVD
+        _, s, v = tf.linalg.svd(h_matrix)
+        
+        # Store results
         beamforming_data["optimal_weights"] = v[..., 0]
+        beamforming_data["singular_values"] = s
+        
+        # Calculate condition number if needed
+        if s.shape[-1] > 0:  # Ensure there are singular values
+            beamforming_data["condition_number"] = s[..., 0] / s[..., -1]
     
     return beamforming_data
 
@@ -214,9 +220,13 @@ def generate_dataset():
             
             # Create input tensor with correct shape for 4x4 MIMO
             # [batch_size, num_tx, num_streams_per_tx, num_ofdm_symbols, num_subcarriers]
-            input_shape = [batch_size, 4, 1,  # 4 transmitters with 1 stream each
-                        OFDM_CONFIG["num_ofdm_symbols"], 
-                        OFDM_CONFIG["num_subcarriers"]]
+            input_shape = [
+                batch_size, 
+                MIMO_CONFIG["num_tx"],  # Use config value
+                1,  # 1 stream per transmitter
+                OFDM_CONFIG["num_ofdm_symbols"], 
+                OFDM_CONFIG["num_subcarriers"]
+            ]
             input_bits = tf.zeros(input_shape, dtype=tf.complex64)
             
             # Generate channel realizations
@@ -225,10 +235,6 @@ def generate_dataset():
             # Handle frequency domain channel response if returned
             if isinstance(h, tuple):
                 h, _ = h  # Ignore frequency domain response since it's not needed
-            
-            # Handle frequency domain channel response if returned
-            if isinstance(h, tuple):
-                h, freq_h = h
             
             # Compute additional characteristics
             characteristics = compute_channel_characteristics(h, snr_db)
@@ -260,8 +266,8 @@ def generate_dataset():
             
             # Save additional MIMO-specific information
             mimo_grp = grp.create_group('mimo_info')
-            mimo_grp.create_dataset('num_tx_ant', data=4)
-            mimo_grp.create_dataset('num_rx_ant', data=4)
+            mimo_grp.create_dataset('num_tx_ant', data=MIMO_CONFIG["num_tx"])
+            mimo_grp.create_dataset('num_rx_ant', data=MIMO_CONFIG["num_rx"])
             
             print(f"Generated batch {i//CONFIG['batch_size'] + 1}")
             
